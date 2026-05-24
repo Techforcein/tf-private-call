@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Tech Force private calling</title>
+  <title>Tech Force Audio Room</title>
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -281,6 +281,80 @@
       transform: translateX(-50%) translateY(0);
     }
 
+
+    .qr-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 120;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(2, 3, 10, .72);
+      backdrop-filter: blur(18px);
+    }
+
+    .qr-modal.show {
+      display: flex;
+    }
+
+    .qr-card {
+      width: min(360px, 92vw);
+      padding: 22px;
+      border-radius: 26px;
+      text-align: center;
+      background: rgba(255, 255, 255, .09);
+      border: 1px solid rgba(255, 255, 255, .16);
+      box-shadow: 0 28px 90px rgba(0, 0, 0, .48);
+      animation: qrPop .25s ease;
+    }
+
+    @keyframes qrPop {
+      from { transform: scale(.92); opacity: 0; }
+      to { transform: scale(1); opacity: 1; }
+    }
+
+    .qr-card h3 {
+      font-size: 20px;
+      margin-bottom: 8px;
+    }
+
+    .qr-card p {
+      font-size: 13px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.65);
+      margin-bottom: 16px;
+    }
+
+    .qr-box {
+      width: 230px;
+      height: 230px;
+      margin: 0 auto 16px;
+      padding: 12px;
+      border-radius: 22px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+    }
+
+    .qr-box img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+    }
+
+    .close-qr {
+      border: 0;
+      cursor: pointer;
+      width: 100%;
+      padding: 12px 15px;
+      border-radius: 15px;
+      font-weight: 800;
+      color: #fff;
+      background: rgba(255,255,255,.12);
+      border: 1px solid rgba(255,255,255,.12);
+    }
+
     @media (max-width: 900px) {
       body { overflow: auto; }
       .app-shell {
@@ -311,7 +385,7 @@
           </div>
         </div>
 
-        <h2 class="hero-title">Talk with your <span> partner</span> instantly.</h2>
+        <h2 class="hero-title">Talk with your <span>game partner</span> instantly.</h2>
         <p class="hero-text">
           Share this room link with your second player. Mic starts automatically and camera stays off for a clean audio-only experience.
         </p>
@@ -324,7 +398,7 @@
           </div>
         </div>
 
-        <button class="btn" id="copyBtn">Copy invite link</button>
+        <button class="btn" id="copyBtn">Show invite QR</button>
 
         <div class="tips">
           <div class="tip">🎙️ <span><b>Mic enabled:</b> players can talk while playing.</span></div>
@@ -350,7 +424,19 @@
     </section>
   </main>
 
-  <div id="toast">Invite link copied ✅</div>
+  <div id="toast">QR opened ✅</div>
+
+  <div class="qr-modal" id="qrModal">
+    <div class="qr-card">
+      <h3>Scan to Join Room</h3>
+      <p>Ask your second player to scan this QR code. It opens the same private room link.</p>
+      <div class="qr-box">
+        <img id="qrImage" src="" alt="Room invite QR code">
+      </div>
+      <button class="close-qr" id="closeQrBtn">Close QR</button>
+    </div>
+  </div>
+
 
   <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
   <script>
@@ -371,12 +457,22 @@
 
       document.getElementById('roomText').textContent = roomID;
 
-      document.getElementById('copyBtn').addEventListener('click', async function () {
-        try {
-          await navigator.clipboard.writeText(inviteLink);
-          showToast('Invite link copied ✅');
-        } catch (error) {
-          showToast('Copy failed. Select URL manually.');
+      const qrModal = document.getElementById('qrModal');
+      const qrImage = document.getElementById('qrImage');
+
+      document.getElementById('copyBtn').addEventListener('click', function () {
+        qrImage.src = 'https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=' + encodeURIComponent(inviteLink);
+        qrModal.classList.add('show');
+        showToast('QR opened ✅');
+      });
+
+      document.getElementById('closeQrBtn').addEventListener('click', function () {
+        qrModal.classList.remove('show');
+      });
+
+      qrModal.addEventListener('click', function (event) {
+        if (event.target === qrModal) {
+          qrModal.classList.remove('show');
         }
       });
 
