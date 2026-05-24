@@ -1,0 +1,429 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Tech Force private calling</title>
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: "Inter", system-ui, sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      overflow: hidden;
+      color: #fff;
+      background:
+        radial-gradient(circle at top left, rgba(0, 255, 229, .28), transparent 32%),
+        radial-gradient(circle at bottom right, rgba(123, 92, 255, .32), transparent 35%),
+        linear-gradient(135deg, #050814, #090d1f 45%, #02030a);
+    }
+
+    body::before {
+      content: "";
+      position: fixed;
+      inset: 0;
+      background-image:
+        linear-gradient(rgba(255,255,255,.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(255,255,255,.045) 1px, transparent 1px);
+      background-size: 42px 42px;
+      mask-image: linear-gradient(to bottom, black, transparent 85%);
+      pointer-events: none;
+    }
+
+    .app-shell {
+      position: relative;
+      z-index: 1;
+      width: 100vw;
+      height: 100vh;
+      padding: 18px;
+      display: grid;
+      grid-template-columns: 340px 1fr;
+      gap: 18px;
+    }
+
+    .sidebar {
+      height: calc(100vh - 36px);
+      padding: 22px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 28px;
+      background: rgba(255, 255, 255, .075);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 24px 80px rgba(0, 0, 0, .38);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      overflow: hidden;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 24px;
+    }
+
+    .logo {
+      width: 48px;
+      height: 48px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-weight: 900;
+      letter-spacing: -1px;
+      background: linear-gradient(135deg, #00ffe5, #7b5cff);
+      color: #06101c;
+      box-shadow: 0 0 34px rgba(0,255,229,.35);
+    }
+
+    .brand h1 {
+      font-size: 18px;
+      line-height: 1.1;
+    }
+
+    .brand p {
+      font-size: 12px;
+      color: rgba(255, 255, 255, .62);
+      margin-top: 4px;
+    }
+
+    .hero-title {
+      font-size: 31px;
+      line-height: 1.05;
+      letter-spacing: -1.4px;
+      margin-bottom: 12px;
+    }
+
+    .hero-title span {
+      background: linear-gradient(90deg, #00ffe5, #b9a7ff, #fff);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+    }
+
+    .hero-text {
+      font-size: 14px;
+      line-height: 1.7;
+      color: rgba(255, 255, 255, .70);
+      margin-bottom: 22px;
+    }
+
+    .info-box {
+      padding: 16px;
+      border: 1px solid rgba(255, 255, 255, .12);
+      border-radius: 20px;
+      background: rgba(0, 0, 0, .22);
+      margin-bottom: 14px;
+    }
+
+    .label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 1.2px;
+      color: rgba(255,255,255,.48);
+      margin-bottom: 7px;
+    }
+
+    .room-code {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      color: rgba(255,255,255,.78);
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #00ff95;
+      box-shadow: 0 0 18px #00ff95;
+      animation: pulse 1.4s infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.7); opacity: .45; }
+    }
+
+    .btn {
+      border: 0;
+      cursor: pointer;
+      width: 100%;
+      padding: 14px 16px;
+      border-radius: 16px;
+      font-size: 14px;
+      font-weight: 800;
+      color: #06101c;
+      background: linear-gradient(135deg, #00ffe5, #a794ff);
+      box-shadow: 0 16px 38px rgba(0,255,229,.18);
+      transition: .25s ease;
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      filter: brightness(1.08);
+    }
+
+    .tips {
+      margin-top: 18px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .tip {
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      font-size: 13px;
+      color: rgba(255,255,255,.68);
+    }
+
+    .tip b {
+      color: #fff;
+    }
+
+    .footer-note {
+      font-size: 11px;
+      line-height: 1.55;
+      color: rgba(255,255,255,.42);
+      margin-top: 18px;
+    }
+
+    .call-panel {
+      position: relative;
+      height: calc(100vh - 36px);
+      border-radius: 30px;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, .12);
+      background: rgba(255,255,255,.06);
+      box-shadow: 0 24px 90px rgba(0, 0, 0, .38);
+    }
+
+    .top-bar {
+      position: absolute;
+      z-index: 4;
+      left: 18px;
+      right: 18px;
+      top: 18px;
+      min-height: 58px;
+      padding: 12px 16px;
+      border-radius: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: rgba(5, 8, 20, .72);
+      border: 1px solid rgba(255,255,255,.12);
+      backdrop-filter: blur(16px);
+      pointer-events: none;
+    }
+
+    .top-bar h2 {
+      font-size: 15px;
+    }
+
+    .top-bar p {
+      font-size: 12px;
+      color: rgba(255,255,255,.56);
+      margin-top: 3px;
+    }
+
+    .pill {
+      padding: 9px 12px;
+      border-radius: 999px;
+      background: rgba(0,255,229,.11);
+      color: #9ffdf2;
+      font-size: 12px;
+      font-weight: 700;
+      border: 1px solid rgba(0,255,229,.20);
+    }
+
+    #root {
+      width: 100%;
+      height: 100%;
+      background: transparent;
+    }
+
+    #toast {
+      position: fixed;
+      left: 50%;
+      bottom: 24px;
+      transform: translateX(-50%) translateY(120%);
+      padding: 13px 18px;
+      border-radius: 14px;
+      background: rgba(0, 0, 0, .72);
+      border: 1px solid rgba(255,255,255,.16);
+      color: white;
+      font-size: 13px;
+      z-index: 99;
+      transition: .3s ease;
+      backdrop-filter: blur(12px);
+    }
+
+    #toast.show {
+      transform: translateX(-50%) translateY(0);
+    }
+
+    @media (max-width: 900px) {
+      body { overflow: auto; }
+      .app-shell {
+        height: auto;
+        min-height: 100vh;
+        grid-template-columns: 1fr;
+      }
+      .sidebar {
+        height: auto;
+      }
+      .call-panel {
+        height: 72vh;
+        min-height: 560px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <main class="app-shell">
+    <aside class="sidebar">
+      <div>
+        <div class="brand">
+          <div class="logo">TF</div>
+          <div>
+            <h1>Tech Force</h1>
+            <p>Private audio room</p>
+          </div>
+        </div>
+
+        <h2 class="hero-title">Talk with your <span> partner</span> instantly.</h2>
+        <p class="hero-text">
+          Share this room link with your second player. Mic starts automatically and camera stays off for a clean audio-only experience.
+        </p>
+
+        <div class="info-box">
+          <div class="label">Room ID</div>
+          <div class="room-code">
+            <span id="roomText">----</span>
+            <span class="status"><i class="dot"></i> Live</span>
+          </div>
+        </div>
+
+        <button class="btn" id="copyBtn">Copy invite link</button>
+
+        <div class="tips">
+          <div class="tip">🎙️ <span><b>Mic enabled:</b> players can talk while playing.</span></div>
+          <div class="tip">👥 <span><b>Max 2 users:</b> perfect for tic tac toe.</span></div>
+          <div class="tip">💬 <span><b>Chat enabled:</b> send quick messages too.</span></div>
+        </div>
+      </div>
+
+      <p class="footer-note">
+        Note: For real public apps, generate ZEGOCLOUD tokens from a backend server. Do not expose server secret in production frontend code.
+      </p>
+    </aside>
+
+    <section class="call-panel">
+      <div class="top-bar">
+        <div>
+          <h2>Audio Call Console</h2>
+          <p>Camera off · Microphone on · 2 player room</p>
+        </div>
+        <div class="pill">Connected UI</div>
+      </div>
+      <div id="root"></div>
+    </section>
+  </main>
+
+  <div id="toast">Invite link copied ✅</div>
+
+  <script src="https://unpkg.com/@zegocloud/zego-uikit-prebuilt/zego-uikit-prebuilt.js"></script>
+  <script>
+    window.onload = function () {
+      function getUrlParams(url) {
+        const urlStr = url.split('?')[1] || '';
+        const urlSearchParams = new URLSearchParams(urlStr);
+        return Object.fromEntries(urlSearchParams.entries());
+      }
+
+      const roomID = getUrlParams(window.location.href).roomID || String(Math.floor(Math.random() * 10000));
+      const userID = String(Math.floor(Math.random() * 10000));
+      const userName = "Player_" + userID;
+
+      const appID = 140004719;
+      const serverSecret = "d09497f227702eed390c83f0fa675cec";
+      const inviteLink = window.location.protocol + '//' + window.location.host + window.location.pathname + '?roomID=' + roomID;
+
+      document.getElementById('roomText').textContent = roomID;
+
+      document.getElementById('copyBtn').addEventListener('click', async function () {
+        try {
+          await navigator.clipboard.writeText(inviteLink);
+          showToast('Invite link copied ✅');
+        } catch (error) {
+          showToast('Copy failed. Select URL manually.');
+        }
+      });
+
+      function showToast(message) {
+        const toast = document.getElementById('toast');
+        toast.textContent = message;
+        toast.classList.add('show');
+        setTimeout(() => toast.classList.remove('show'), 2200);
+      }
+
+      const kitToken = ZegoUIKitPrebuilt.generateKitTokenForTest(
+        appID,
+        serverSecret,
+        roomID,
+        userID,
+        userName
+      );
+
+      const zp = ZegoUIKitPrebuilt.create(kitToken);
+
+      zp.joinRoom({
+        container: document.querySelector('#root'),
+        sharedLinks: [
+          {
+            name: 'Personal link',
+            url: inviteLink,
+          },
+        ],
+        scenario: {
+          mode: ZegoUIKitPrebuilt.VideoConference,
+          config: {
+            role: 'Host',
+          },
+        },
+        turnOnMicrophoneWhenJoining: true,
+        turnOnCameraWhenJoining: false,
+        showMyCameraToggleButton: false,
+        showMyMicrophoneToggleButton: true,
+        showAudioVideoSettingsButton: false,
+        showScreenSharingButton: false,
+        showTextChat: true,
+        showUserList: true,
+        maxUsers: 2,
+        layout: 'Auto',
+        showLayoutButton: false,
+      });
+    };
+  </script>
+</body>
+</html>
